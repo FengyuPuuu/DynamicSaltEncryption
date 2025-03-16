@@ -4,18 +4,32 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * @Author caiyh
- * @Date 2025/3/17 0:38
- * @Description 基于saltKey(可以是userId 可以是username...)动态加盐加密
+ * 基于saltKey(可以是userId 可以是username...)动态加盐加密
+ *
+ * @author caiyh
+ * @since 2025/3/17
  */
 public class DynamicSaltEncryption {
     private static final String DEFAULT_ALGORITHM = "SHA-256";
-    // 生成盐值（基于 userId）
+    /**
+     * 生成盐值（基于 saltKey）
+     *
+     * @param saltKey 盐值生成的关键字（如 userId 或 username）
+     * @return 生成的盐值
+     */
     public static String generateSalt(String saltKey) {
         return String.valueOf(Math.abs(saltKey.hashCode()));
     }
 
-    // 加盐并加密
+    /**
+     * 加盐并加密
+     *
+     * @param value     需要加密的值
+     * @param saltKey   盐值生成的关键字
+     * @param algorithm 加密算法（如 SHA-256）
+     * @return 加密后的值
+     * @throws NoSuchAlgorithmException 如果指定的加密算法不存在
+     */
     public static String encryptValue(String value, String saltKey, String algorithm) throws NoSuchAlgorithmException, NoSuchAlgorithmException {
         String salt = generateSalt(saltKey);
         System.out.println("salt:"+salt);
@@ -41,15 +55,40 @@ public class DynamicSaltEncryption {
         }
         return hexString.toString();
     }
-
+    /**
+     * 加盐并加密（使用默认算法 SHA-256）
+     *
+     * @param value   需要加密的值
+     * @param saltKey 盐值生成的关键字
+     * @return 加密后的值
+     * @throws NoSuchAlgorithmException 如果指定的加密算法不存在
+     */
     public static String encryptValue(String value, String saltKey) throws NoSuchAlgorithmException, NoSuchAlgorithmException {
         return encryptValue(value,saltKey,DEFAULT_ALGORITHM);
     }
 
-    // 验证密码
+    /**
+     * 验证值是否匹配
+     *
+     * @param value          原始值
+     * @param encryptedValue 加密后的值
+     * @param saltKey        盐值生成的关键字
+     * @param algorithm      加密算法
+     * @return 如果匹配返回 true，否则返回 false
+     * @throws NoSuchAlgorithmException 如果指定的加密算法不存在
+     */
     public static boolean verifyValue(String value, String encryptedValue, String saltKey, String algorithm) throws NoSuchAlgorithmException {
         return encryptValue(value, saltKey, algorithm).equals(encryptedValue);
     }
+    /**
+     * 验证值是否匹配（使用默认算法 SHA-256）
+     *
+     * @param value          原始值
+     * @param encryptedValue 加密后的值
+     * @param saltKey        盐值生成的关键字
+     * @return 如果匹配返回 true，否则返回 false
+     * @throws NoSuchAlgorithmException 如果指定的加密算法不存在
+     */
     public static boolean verifyValue(String value, String encryptedValue, String saltKey) throws NoSuchAlgorithmException {
         return verifyValue(value,encryptedValue,saltKey,DEFAULT_ALGORITHM);
     }
